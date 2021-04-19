@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/context"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+    <!-- 开启组件扫描 -->
+    <context:component-scan base-package="org.simple.spring.transaction"/>
+
+    <!-- 导入外部数据库属性配置文件 -->
+    <util:property-placeholder location="classpath:TxDataSource.properties"/>
+
+    <!-- 配置druid数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!-- 1.配置事物管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 开启事物注解-->
+    <!--<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+    <aop:config proxy-target-class="true"/>-->
+
+
+    <!-- 2.使用xml配置通知 -->
+    <tx:advice id="tx-advice">
+        <!-- 配置事物参数 -->
+        <tx:attributes>
+            <!-- 指定哪种规则的方法上面添加事物 -->
+            <tx:method name="transfer" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 3.配置切入点和切面
+        proxy-target-class属性值决定是基于接口的还是基于类的代理被创建。
+        为true则是基于类的代理将起作用（需要cglib库），
+        为false或者省略这个属性，则标准的JDK 基于接口的代理将起作用。
+        Exception in thread "main" org.springframework.beans.factory.BeanNotOfRequiredTypeException: Bean named 'accountServiceImpl' is expected to be of type 'org.simple.spring.transaction.AccountServiceImpl' but was actually of type 'com.sun.proxy.$Proxy11'
+    -->
+    <aop:config proxy-target-class="true">
+        <!-- 配置切入点-->
+        <aop:pointcut id="pointcut" expression="execution(* org.simple.spring.transaction.AccountServiceImpl.*(..))"/>
+        <!-- 配置切面-->
+        <aop:advisor advice-ref="tx-advice" pointcut-ref="pointcut"/>
+    </aop:config>
+
+    <!-- 配置spring用于操作数据库的jdbcTemplate-->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+</beans>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="empId" class="org.simple.spring.entity.Emp">
+        <property name="empNo" value="10001"/>
+        <property name="empName" value="empName"/>
+        <property name="dept">
+            <bean id="IT_DEPT" class="org.simple.spring.entity.Dept">
+                <property name="deptNo" value="deptNo"/>
+                <property name="deptName" value="deptName"/>
+            </bean>
+        </property>
+    </bean>
+
+</beans>

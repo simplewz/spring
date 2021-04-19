@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="beanPostProcessor" class="org.simple.spring.entity.MyBeanPostProcessor"/>
+    <bean id="instantiationAwareBeanPostProcessor" class="org.simple.spring.entity.MyInstantiationAwareBeanPostProcessor"/>
+    <bean id="beanFactoryPostProcessor" class="org.simple.spring.entity.MyBeanFactoryPostProcessor"/>
+
+    <bean id="simple" class="org.simple.spring.entity.Person" init-method="init" destroy-method="beanDestroy">
+        <property name="name" value="wangzhao"/>
+        <property name="address" value="浙江省宁波市"/>
+        <property name="phone" value="13243434678"/>
+    </bean>
+
+</beans>
